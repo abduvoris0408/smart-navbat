@@ -58,9 +58,29 @@ type QueueForm = {
 	// Add basic user info fields for authentication
 	fullName: string
 	phoneNumber: string
+	appointmentTime: string
+	appointmentDate: string
+}
+
+type PaymentData = {
+	amount: string
+	cardNumber: string
+	expiryDate: string
+	cvv: string
+	cardHolderName: string
 }
 
 const OrganizationsList: React.FC = () => {
+	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+	const [paymentLoading, setPaymentLoading] = useState(false)
+	const [paymentData, setPaymentData] = useState<PaymentData>({
+		amount: '2000', // Default amount in UZS
+		cardNumber: '',
+		expiryDate: '',
+		cvv: '',
+		cardHolderName: '',
+	})
+
 	const [organizations, setOrganizations] = useState<Organization[]>([])
 	const [loading, setLoading] = useState<boolean>(true)
 	const [error, setError] = useState<string | null>(null)
@@ -77,6 +97,8 @@ const OrganizationsList: React.FC = () => {
 		timeSlot: '',
 		fullName: '',
 		phoneNumber: '',
+		appointmentDate: '',
+		appointmentTime: '',
 	})
 
 	const { toast } = useToast()
@@ -149,6 +171,13 @@ const OrganizationsList: React.FC = () => {
 		setFormData(prev => ({ ...prev, [name]: value }))
 	}
 
+	const handlePaymentInputChange = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
+		const { name, value } = e.target
+		setPaymentData(prev => ({ ...prev, [name]: value }))
+	}
+
 	const handleSubmitQueue = async (e: React.FormEvent) => {
 		e.preventDefault()
 		setQueueLoading(true)
@@ -181,12 +210,12 @@ const OrganizationsList: React.FC = () => {
 				}
 			)
 
-			// Agar foydalanuvchi avtorizatsiyadan o'tmagan bo‘lsa
+			// Agar foydalanuvchi avtorizatsiyadan o'tmagan bo'lsa
 			if (response.status === 401) {
 				throw new Error("Ro'yxatdan o'ting yoki tizimga kiring")
 			}
 
-			// Agar boshqa xatolik bo‘lsa
+			// Agar boshqa xatolik bo'lsa
 			if (!response.ok) {
 				const errorData = await response.json()
 				throw new Error(
@@ -206,19 +235,59 @@ const OrganizationsList: React.FC = () => {
 				timeSlot: '',
 				fullName: '',
 				phoneNumber: '',
+				appointmentDate: '',
+				appointmentTime: '',
 			})
 			setIsQueueModalOpen(false)
+
+			// Open payment modal after successful queue creation
+			setIsPaymentModalOpen(true)
 		} catch (error: any) {
 			console.error('Navbat yaratishda xatolik:', error)
 			toast({
 				title: 'Xatolik!',
 				description:
 					error.message ||
-					'Navbat yaratishda xatolik yuz berdi. Qayta urinib ko‘ring.',
+					'Navbat yaratishda xatolik yuz berdi. Qayta urinib ko`ring.',
 				variant: 'destructive',
 			})
 		} finally {
 			setQueueLoading(false)
+		}
+	}
+
+	const handleSubmitPayment = async (e: React.FormEvent) => {
+		e.preventDefault()
+		setPaymentLoading(true)
+
+		try {
+			// Simulate payment processing
+			await new Promise(resolve => setTimeout(resolve, 1500))
+
+			// Success
+			toast({
+				title: "To'lov muvaffaqiyatli amalga oshirildi",
+				description: "Sizning to'lovingiz qabul qilindi",
+			})
+
+			setPaymentData({
+				amount: '50000',
+				cardNumber: '',
+				expiryDate: '',
+				cvv: '',
+				cardHolderName: '',
+			})
+			setIsPaymentModalOpen(false)
+		} catch (error: any) {
+			console.error("To'lov qilishda xatolik:", error)
+			toast({
+				title: 'Xatolik!',
+				description:
+					"To'lov qilishda xatolik yuz berdi. Qayta urinib ko'ring.",
+				variant: 'destructive',
+			})
+		} finally {
+			setPaymentLoading(false)
 		}
 	}
 
@@ -276,7 +345,7 @@ const OrganizationsList: React.FC = () => {
 				Object.entries(organizationsByType).map(([type, orgs]) => (
 					<div key={type} className='mb-10'>
 						<h2 className='text-2xl font-semibold mb-4 flex items-center'>
-							<Building2 className='mr-2' /> {type}
+							<Building2 className='mr-2' /> Hamkor bank
 						</h2>
 						<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
 							{orgs.map(org => (
@@ -535,7 +604,7 @@ const OrganizationsList: React.FC = () => {
 								</div>
 							</div>
 
-							<div className='grid grid-cols-4 items-center gap-4'>
+							{/* <div className='grid grid-cols-4 items-center gap-4'>
 								<Label
 									htmlFor='timeSlot'
 									className='text-right'
@@ -553,6 +622,99 @@ const OrganizationsList: React.FC = () => {
 										required
 									/>
 								</div>
+							</div> */}
+							<div className='grid grid-cols-4 items-center gap-4'>
+								<Label
+									htmlFor='appointmentDate'
+									className='text-right'
+								>
+									Sana
+								</Label>
+								<div className='col-span-3'>
+									<input
+										id='appointmentDate'
+										name='appointmentDate'
+										type='date'
+										className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
+										value={formData.appointmentDate}
+										onChange={handleInputChange}
+										required
+									/>
+								</div>
+							</div>
+
+							<div className='grid grid-cols-4 items-center gap-4'>
+								<Label
+									htmlFor='appointmentTime'
+									className='text-right'
+								>
+									Vaqt
+								</Label>
+								<div className='col-span-3'>
+									<Select
+										value={formData.appointmentTime}
+										onValueChange={value =>
+											setFormData(prev => ({
+												...prev,
+												appointmentTime: value,
+											}))
+										}
+									>
+										<SelectTrigger className='w-full'>
+											<SelectValue placeholder='Vaqtni tanlang' />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value='09:00'>
+												09:00 - 09:30
+											</SelectItem>
+											<SelectItem value='09:30'>
+												09:30 - 10:00
+											</SelectItem>
+											<SelectItem value='10:00'>
+												10:00 - 10:30
+											</SelectItem>
+											<SelectItem value='10:30'>
+												10:30 - 11:00
+											</SelectItem>
+											<SelectItem value='11:00'>
+												11:00 - 11:30
+											</SelectItem>
+											<SelectItem value='11:30'>
+												11:30 - 12:00
+											</SelectItem>
+											<SelectItem value='12:00'>
+												12:00 - 12:30
+											</SelectItem>
+											<SelectItem value='12:30'>
+												12:30 - 14:00
+											</SelectItem>
+											<SelectItem value='14:00'>
+												14:00 - 14:30
+											</SelectItem>
+											<SelectItem value='14:30'>
+												14:30 - 15:00
+											</SelectItem>
+											<SelectItem value='15:00'>
+												15:00 - 15:30
+											</SelectItem>
+											<SelectItem value='15:30'>
+												15:30 - 16:00
+											</SelectItem>
+											<SelectItem value='16:00'>
+												16:00 - 16:30
+											</SelectItem>
+											<SelectItem value='16:30'>
+												16:30 - 17:00
+											</SelectItem>
+											<SelectItem value='17:00'>
+												17:00 - 17:30
+											</SelectItem>
+											<SelectItem value='17:30'>
+												17:30 - 18:00
+											</SelectItem>
+										</SelectContent>
+									</Select>
+								</div>
 							</div>
 						</div>
 
@@ -561,6 +723,96 @@ const OrganizationsList: React.FC = () => {
 								{queueLoading
 									? 'Yuklanmoqda...'
 									: 'Navbatga yozilish'}
+							</Button>
+						</DialogFooter>
+					</form>
+				</DialogContent>
+			</Dialog>
+
+			{/* Payment Modal */}
+			<Dialog
+				open={isPaymentModalOpen}
+				onOpenChange={setIsPaymentModalOpen}
+			>
+				<DialogContent className='sm:max-w-[500px]'>
+					<DialogHeader>
+						<DialogTitle>To`lov ma`lumotlari</DialogTitle>
+						<DialogDescription>
+							{selectedService} xizmati uchun to`lov
+							ma`lumotlarini kiriting
+						</DialogDescription>
+					</DialogHeader>
+
+					<form onSubmit={handleSubmitPayment}>
+						<div className='grid gap-4 py-4'>
+							<div className='grid grid-cols-4 items-center gap-4'>
+								<Label
+									htmlFor='paymentAmount'
+									className='text-right'
+								>
+									Summa
+								</Label>
+								<div className='col-span-3'>
+									<input
+										id='paymentAmount'
+										name='paymentAmount'
+										className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
+										value={2000}
+										readOnly
+									/>
+								</div>
+							</div>
+
+							<div className='grid grid-cols-4 items-center gap-4'>
+								<Label
+									htmlFor='cardNumber'
+									className='text-right'
+								>
+									Karta raqami
+								</Label>
+								<div className='col-span-3'>
+									<input
+										id='cardNumber'
+										name='cardNumber'
+										type='text'
+										className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
+										value={paymentData.cardNumber}
+										onChange={handlePaymentInputChange}
+										placeholder='XXXX XXXX XXXX XXXX'
+										required
+									/>
+								</div>
+							</div>
+
+							<div className='grid grid-cols-2 gap-4'>
+								<div className='grid grid-cols-4 items-center gap-2'>
+									<Label
+										htmlFor='expiryDate'
+										className='text-right col-span-2'
+									>
+										Muddati
+									</Label>
+									<div className='col-span-2'>
+										<input
+											id='expiryDate'
+											name='expiryDate'
+											type='text'
+											className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
+											value={paymentData.expiryDate}
+											onChange={handlePaymentInputChange}
+											placeholder='MM/YY'
+											required
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<DialogFooter>
+							<Button type='submit' disabled={paymentLoading}>
+								{paymentLoading
+									? 'Yuklanmoqda...'
+									: "To'lov qilish"}
 							</Button>
 						</DialogFooter>
 					</form>
