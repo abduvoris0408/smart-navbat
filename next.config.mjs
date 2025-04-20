@@ -4,12 +4,11 @@ const nextConfig = {
 		optimizePackageImports: ['date-fns'],
 	},
 	images: {
-		domains: ['static.zarnews.uz'],
+		domains: ['static.zarnews.uz', 'cdn.pixabay.com'],
 		remotePatterns: [
 			{
 				protocol: 'https',
 				hostname: 'us-east-1-shared-usea1-02.graphassets.com',
-				
 			},
 		],
 	},

@@ -319,7 +319,7 @@ const OrganizationsList: React.FC = () => {
 			) : (
 				<div className='text-center py-10'>
 					<p className='text-muted-foreground text-lg'>
-						Bu filter bo'yicha tashkilotlar topilmadi
+						Bu filter bo`yicha tashkilotlar topilmadi
 					</p>
 				</div>
 			)}
@@ -332,7 +332,7 @@ const OrganizationsList: React.FC = () => {
 							<DialogHeader>
 								<DialogTitle>{selectedOrg.name}</DialogTitle>
 								<DialogDescription>
-									Tashkilot haqida batafsil ma'lumot
+									Tashkilot haqida batafsil ma`lumot
 								</DialogDescription>
 							</DialogHeader>
 
@@ -471,8 +471,8 @@ const OrganizationsList: React.FC = () => {
 					<DialogHeader>
 						<DialogTitle>Navbatga yozilish</DialogTitle>
 						<DialogDescription>
-							{selectedService} xizmati uchun ma'lumotlarni
-							to'ldiring
+							{selectedService} xizmati uchun ma`lumotlarni
+							to`ldiring
 						</DialogDescription>
 					</DialogHeader>
 
