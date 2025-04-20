@@ -8,7 +8,6 @@ export const metadata: Metadata = {
 }
 
 async function AboutPage() {
-
 	return (
 		<div className='max-w-6xl mx-auto'>
 			<div className='relative min-h-[40vh] flex items-center justify-center flex-col'>
@@ -41,7 +40,7 @@ async function AboutPage() {
 						className='rounded-md object-cover'
 					/>
 				</div>
-				<div className='h-80 self-end relative max-md:col-span-2 max-md:h-72'>
+				<div className='h-80 relative max-md:col-span-2 max-md:h-72'>
 					<Image
 						src={'/about/00.jpg'}
 						alt='about'
@@ -75,8 +74,6 @@ async function AboutPage() {
 					faoliyatini boshlaydi! 🚀
 				</p>
 			</div>
-
-		
 		</div>
 	)
 }

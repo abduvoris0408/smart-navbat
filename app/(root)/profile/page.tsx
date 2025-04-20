@@ -84,12 +84,12 @@ export default function ProfilePage() {
 						<div>
 							<div className='flex items-center gap-2'>
 								<CardTitle className='text-2xl'>
-									Alex Johnson
+									Full Name
 								</CardTitle>
 								<Badge>Pro Member</Badge>
 							</div>
 							<CardDescription className='text-base mt-1'>
-								Product Designer • San Francisco, CA
+								Foydalanuvchi haqida ma`lumot
 							</CardDescription>
 							<div className='flex gap-2 mt-2'>
 								<Button size='sm' variant='outline'>
@@ -116,13 +116,11 @@ export default function ProfilePage() {
 						<TabsContent value='about'>
 							<div className='space-y-4'>
 								<div>
-									<h3 className='font-medium text-lg'>Bio</h3>
+									<h3 className='font-medium text-lg'>
+										Foydalanuvchi shaxsiy ma`lumotlari
+									</h3>
 									<p className='text-muted-foreground mt-1'>
-										Product designer with over 8 years of
-										experience in creating user-centered
-										digital products. Passionate about
-										solving complex problems through design
-										thinking and collaboration.
+										Foydalanuvchi tavsifi
 									</p>
 								</div>
 								<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -133,37 +131,16 @@ export default function ProfilePage() {
 										<ul className='mt-2 space-y-2'>
 											<li className='flex items-center'>
 												<Mail className='mr-2 h-4 w-4 text-muted-foreground' />
-												<span>
-													alex.johnson@example.com
-												</span>
+												<span>Email ma`lumotlari</span>
 											</li>
 											<li className='flex items-center'>
 												<Calendar className='mr-2 h-4 w-4 text-muted-foreground' />
-												<span>Joined January 2020</span>
+												<span>
+													Foydalanuvchi qo`shilgan
+													sana
+												</span>
 											</li>
 										</ul>
-									</div>
-									<div>
-										<h3 className='font-medium text-lg'>
-											Skills
-										</h3>
-										<div className='flex flex-wrap gap-2 mt-2'>
-											<Badge variant='secondary'>
-												UI Design
-											</Badge>
-											<Badge variant='secondary'>
-												UX Research
-											</Badge>
-											<Badge variant='secondary'>
-												Prototyping
-											</Badge>
-											<Badge variant='secondary'>
-												Figma
-											</Badge>
-											<Badge variant='secondary'>
-												Design Systems
-											</Badge>
-										</div>
 									</div>
 								</div>
 							</div>

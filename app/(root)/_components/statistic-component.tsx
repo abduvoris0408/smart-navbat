@@ -1,6 +1,6 @@
 'use client'
 
-import { Award, Calendar, Star, Users } from 'lucide-react'
+import { Calendar, Star, Users } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 export default function StatisticsComponent() {
@@ -14,7 +14,7 @@ export default function StatisticsComponent() {
 	const containerRef = useRef<HTMLDivElement>(null)
 
 	const targetCounts = {
-		users: 25000,
+		users: 100000,
 		rating: 4.9,
 		years: 7,
 		awards: 15,
@@ -82,22 +82,17 @@ export default function StatisticsComponent() {
 			<div className='absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl'></div>
 			<div className='absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full -ml-32 -mb-32 blur-3xl'></div>
 
-			<div className='text-center mb-12 max-w-2xl mx-auto'>
-			
-				
-			</div>
-
-			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+			<div className='grid  grid-cols-1 md:flex md:justify-center lg:flex lg:justify-center gap-8'>
 				{/* Users Stat Card */}
 				<div
-					className={`relative group transition-all duration-1000 ease-out ${
+					className={`relative w-[100%] lg:w-[30%] group transition-all duration-1000 ease-out ${
 						isVisible
 							? 'translate-y-0 opacity-100'
 							: 'translate-y-10 opacity-0'
 					}`}
 					style={{ transitionDelay: '100ms' }}
 				>
-					<div className='absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl blur-sm transform group-hover:scale-105 transition-transform duration-500'></div>
+					<div className=' absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl blur-sm transform group-hover:scale-105 transition-transform duration-500'></div>
 					<div className='relative bg-background dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-primary/10 h-full transform group-hover:-translate-y-1 transition-all duration-300'>
 						<div className='absolute -top-4 -right-4 bg-primary/10 w-24 h-24 rounded-full blur-xl opacity-70'></div>
 
@@ -114,10 +109,11 @@ export default function StatisticsComponent() {
 							{counts.users.toLocaleString()}
 						</h3>
 						<p className='text-center text-lg font-medium text-gray-700 dark:text-gray-300'>
-							Active Users
+							Faol foydalanuvchilar
 						</p>
 						<p className='mt-2 text-sm text-center text-gray-500 dark:text-gray-400'>
-							People using our app worldwide
+							O`zbekiston bo`ylab bizning ilovamizdan
+							foydalanadigan odamlar
 						</p>
 
 						<div className='w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-6 overflow-hidden'>
@@ -131,7 +127,7 @@ export default function StatisticsComponent() {
 
 				{/* Rating Stat Card */}
 				<div
-					className={`relative group transition-all duration-1000 ease-out ${
+					className={`w-[100%] lg:w-[30%] relative group transition-all duration-1000 ease-out ${
 						isVisible
 							? 'translate-y-0 opacity-100'
 							: 'translate-y-10 opacity-0'
@@ -156,10 +152,10 @@ export default function StatisticsComponent() {
 							<span className='text-3xl'>/5</span>
 						</h3>
 						<p className='text-center text-lg font-medium text-gray-700 dark:text-gray-300'>
-							Average Rating
+							Tizim reytingi
 						</p>
 						<p className='mt-2 text-sm text-center text-gray-500 dark:text-gray-400'>
-							From customer reviews
+							Mijozlar baholagan
 						</p>
 
 						<div className='w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-6 overflow-hidden'>
@@ -177,7 +173,7 @@ export default function StatisticsComponent() {
 
 				{/* Years Stat Card */}
 				<div
-					className={`relative group transition-all duration-1000 ease-out ${
+					className={`w-[100%] lg:w-[30%] relative group transition-all duration-1000 ease-out ${
 						isVisible
 							? 'translate-y-0 opacity-100'
 							: 'translate-y-10 opacity-0'
@@ -198,13 +194,13 @@ export default function StatisticsComponent() {
 						</div>
 
 						<h3 className='text-5xl font-bold text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70'>
-							{counts.years}
+							{1}
 						</h3>
 						<p className='text-center text-lg font-medium text-gray-700 dark:text-gray-300'>
-							Years Active
+							2025-yildan buyon
 						</p>
 						<p className='mt-2 text-sm text-center text-gray-500 dark:text-gray-400'>
-							Years in operation
+							Faol foydalanilmoqda
 						</p>
 
 						<div className='w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-6 overflow-hidden'>
@@ -217,7 +213,7 @@ export default function StatisticsComponent() {
 				</div>
 
 				{/* Awards Stat Card */}
-				<div
+				{/* <div
 					className={`relative group transition-all duration-1000 ease-out ${
 						isVisible
 							? 'translate-y-0 opacity-100'
@@ -255,7 +251,7 @@ export default function StatisticsComponent() {
 							></div>
 						</div>
 					</div>
-				</div>
+				</div> */}
 			</div>
 		</div>
 	)
