@@ -3,6 +3,7 @@ import BlogCard from '@/components/cards/blog'
 import { getBlogs } from '@/service/blog.service'
 import { Dot, Home } from 'lucide-react'
 import Link from 'next/link'
+import AddOrganButton from '../addorgan/components/addorganbutton'
 
 async function BlogsPage() {
 	const blogs = await getBlogs()
@@ -23,6 +24,9 @@ async function BlogsPage() {
 					</Link>
 					<Dot />
 					<p className='text-muted-foreground'>Muassasalar</p>
+				</div>
+				<div className='py-2'>
+					<AddOrganButton />
 				</div>
 			</div>
 

@@ -4,6 +4,7 @@ export const navLinks = [
 	{ name: 'Asosiy', route: '/', icon: Home },
 	{ name: 'Biz haqimizda', route: '/about', icon: ListCollapse },
 	{ name: 'Muassasalar', route: '/blogs', icon: FileCode2 },
+	{ name: 'Navbatlar', route: '/allqueue', icon: Contact2 },
 	{ name: "Bog'laning", route: '/contact', icon: Contact2 },
 ]
 

@@ -1,10 +1,10 @@
 'use client'
 
-import type React from 'react'
-
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
 	Card,
+	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
@@ -17,7 +17,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
 	Select,
@@ -27,265 +26,542 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
-import { Building2, Hospital } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import {
+	Building2,
+	Clock,
+	Globe,
+	Mail,
+	MapPin,
+	Phone,
+	Wrench,
+} from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 
-// Define the QueueItem type
-export type QueueItem = {
-	id: string
-	name: string
-	institution: string
-	time: string
-	date: string
-	transport: string
-	payment: string
-	queueNumber: number
-	createdAt: number
+type Schedule = {
+	[key: string]: string
 }
 
-export default function Home() {
-	const [isOpen, setIsOpen] = useState(false)
-	const [selectedInstitution, setSelectedInstitution] = useState('')
-	const [formData, setFormData] = useState({
-		name: '',
-		time: '',
-		date: '',
-		transport: '',
-		payment: '',
+type Organization = {
+	_id: string
+	name: string
+	location: string
+	services: string[]
+	schedule: Schedule
+	phoneNumber?: string
+	email?: string
+	website?: string
+}
+
+type QueueForm = {
+	service: string
+	timeSlot: string
+	// Add basic user info fields for authentication
+	fullName: string
+	phoneNumber: string
+}
+
+const OrganizationsList: React.FC = () => {
+	const [organizations, setOrganizations] = useState<Organization[]>([])
+	const [loading, setLoading] = useState<boolean>(true)
+	const [error, setError] = useState<string | null>(null)
+	const [selectedFilter, setSelectedFilter] = useState<string>('all')
+
+	const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null)
+	const [isOrgModalOpen, setIsOrgModalOpen] = useState(false)
+
+	const [isQueueModalOpen, setIsQueueModalOpen] = useState(false)
+	const [selectedService, setSelectedService] = useState<string>('')
+	const [queueLoading, setQueueLoading] = useState(false)
+	const [formData, setFormData] = useState<QueueForm>({
+		service: '',
+		timeSlot: '',
+		fullName: '',
+		phoneNumber: '',
 	})
-	const router = useRouter()
+
 	const { toast } = useToast()
 
-	const institutions = {
-		banks: ['National Bank', 'City Bank', 'Community Credit Union'],
-		hospitals: ['General Hospital', 'Medical Center', 'Community Clinic'],
+	useEffect(() => {
+		const fetchOrganizations = async () => {
+			setLoading(true)
+			try {
+				const response = await fetch(
+					'https://snavbatbackend.onrender.com/api/organizations'
+				)
+				if (!response.ok) {
+					throw new Error('Server javob bermadi')
+				}
+				const data = await response.json()
+				setOrganizations(data)
+				setError(null)
+			} catch (error) {
+				console.error('Tashkilotlar yuklanmadi:', error)
+				setError('Tashkilotlarni yuklashda xatolik yuz berdi')
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		fetchOrganizations()
+	}, [])
+
+	// Mavjud xizmatlar turlarini olish
+	const allServices = organizations.flatMap(org => org.services)
+	const uniqueServices = [...new Set(allServices)]
+
+	// Tanlangan filter bo'yicha tashkilotlarni filtrlash
+	const filteredOrganizations =
+		selectedFilter === 'all'
+			? organizations
+			: organizations.filter(org => org.services.includes(selectedFilter))
+
+	// Hafta kunlarini o'zbekchaga o'girish
+	const translateDay = (day: string) => {
+		const days: { [key: string]: string } = {
+			monday: 'Dushanba',
+			tuesday: 'Seshanba',
+			wednesday: 'Chorshanba',
+			thursday: 'Payshanba',
+			friday: 'Juma',
+			saturday: 'Shanba',
+			sunday: 'Yakshanba',
+		}
+		return days[day.toLowerCase()] || day
 	}
 
-	const handleInstitutionClick = (type: string, name: string) => {
-		setSelectedInstitution(name)
-		setIsOpen(true)
+	const handleOrgClick = (org: Organization) => {
+		setSelectedOrg(org)
+		setIsOrgModalOpen(true)
+	}
+
+	const handleServiceClick = (service: string) => {
+		setSelectedService(service)
+		setFormData({
+			...formData,
+			service: service,
+		})
+		setIsOrgModalOpen(false)
+		setIsQueueModalOpen(true)
 	}
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { id, value } = e.target
-		setFormData(prev => ({ ...prev, [id]: value }))
+		const { name, value } = e.target
+		setFormData(prev => ({ ...prev, [name]: value }))
 	}
 
-	const handleSelectChange = (value: string) => {
-		setFormData(prev => ({ ...prev, transport: value }))
-	}
-
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmitQueue = async (e: React.FormEvent) => {
 		e.preventDefault()
+		setQueueLoading(true)
 
-		// Generate a random queue number between 1 and 100
-		const queueNumber = Math.floor(Math.random() * 100) + 1
+		try {
+			// Tokenni localStorage'dan olish
+			const token = localStorage.getItem('auth_token')
 
-		// Create a new queue item
-		const newQueueItem: QueueItem = {
-			id: Date.now().toString(),
-			name: formData.name,
-			institution: selectedInstitution,
-			time: formData.time,
-			date: formData.date,
-			transport: formData.transport,
-			payment: formData.payment,
-			queueNumber,
-			createdAt: Date.now(),
-		}
-
-		// Get existing queue items from localStorage or initialize empty array
-		let queueItems: QueueItem[] = []
-		if (typeof window !== 'undefined') {
-			const storedItems = localStorage.getItem('queueItems')
-			if (storedItems) {
-				queueItems = JSON.parse(storedItems)
+			if (!token) {
+				throw new Error('Token topilmadi. Iltimos, tizimga kiring.')
 			}
 
-			// Add new item to the queue
-			queueItems.push(newQueueItem)
+			const response = await fetch(
+				'https://snavbatbackend.onrender.com/api/queues/add',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${token}`, // MUHIM: Bearer so'zini unutmang
+					},
+					body: JSON.stringify({
+						service: formData.service,
+						timeSlot: formData.timeSlot,
+						user: {
+							fullName: formData.fullName,
+							phoneNumber: formData.phoneNumber,
+						},
+						organizationId: selectedOrg?._id || '',
+					}),
+				}
+			)
 
-			// Save updated queue back to localStorage
-			localStorage.setItem('queueItems', JSON.stringify(queueItems))
+			// Agar foydalanuvchi avtorizatsiyadan o'tmagan bo‘lsa
+			if (response.status === 401) {
+				throw new Error("Ro'yxatdan o'ting yoki tizimga kiring")
+			}
+
+			// Agar boshqa xatolik bo‘lsa
+			if (!response.ok) {
+				const errorData = await response.json()
+				throw new Error(
+					errorData.message || 'Navbat yaratishda xatolik yuz berdi'
+				)
+			}
+
+			const data = await response.json()
+
+			toast({
+				title: 'Muvaffaqiyatli',
+				description: 'Navbat muvaffaqiyatli yaratildi',
+			})
+
+			setFormData({
+				service: '',
+				timeSlot: '',
+				fullName: '',
+				phoneNumber: '',
+			})
+			setIsQueueModalOpen(false)
+		} catch (error: any) {
+			console.error('Navbat yaratishda xatolik:', error)
+			toast({
+				title: 'Xatolik!',
+				description:
+					error.message ||
+					'Navbat yaratishda xatolik yuz berdi. Qayta urinib ko‘ring.',
+				variant: 'destructive',
+			})
+		} finally {
+			setQueueLoading(false)
 		}
+	}
 
-		toast({
-			title: 'Appointment scheduled',
-			description: `You have been assigned queue number ${queueNumber}`,
+	// Tashkilotlar turini guruhlash uchun
+	const organizationsByType: Record<string, Organization[]> = {}
+
+	if (filteredOrganizations.length > 0) {
+		filteredOrganizations.forEach(org => {
+			const firstService = org.services[0] || 'Boshqa'
+			if (!organizationsByType[firstService]) {
+				organizationsByType[firstService] = []
+			}
+			organizationsByType[firstService].push(org)
 		})
-
-		// Reset form and close dialog
-		setFormData({
-			name: '',
-			time: '',
-			date: '',
-			transport: '',
-			payment: '',
-		})
-		setIsOpen(false)
-
-		// Navigate to the categories page
-		router.push('/categories')
 	}
 
 	return (
 		<main className='container mx-auto py-[90px]'>
 			<h1 className='text-3xl font-bold text-center mb-10'>
-				Appointment Scheduling System
+				Tashkilotlar ro`yxati
 			</h1>
 
-			<div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-				<div>
-					<h2 className='text-2xl font-semibold mb-4 flex items-center'>
-						<Building2 className='mr-2' /> Banks
-					</h2>
-					<div className='grid grid-cols-1 gap-4'>
-						{institutions.banks.map(bank => (
-							<Card
-								key={bank}
-								className='cursor-pointer hover:bg-muted/50 transition-colors'
-								onClick={() =>
-									handleInstitutionClick('bank', bank)
-								}
-							>
-								<CardHeader>
-									<CardTitle>{bank}</CardTitle>
-									<CardDescription>
-										Click to schedule an appointment
-									</CardDescription>
-								</CardHeader>
-							</Card>
-						))}
-					</div>
-				</div>
-
-				<div>
-					<h2 className='text-2xl font-semibold mb-4 flex items-center'>
-						<Hospital className='mr-2' /> Hospitals
-					</h2>
-					<div className='grid grid-cols-1 gap-4'>
-						{institutions.hospitals.map(hospital => (
-							<Card
-								key={hospital}
-								className='cursor-pointer hover:bg-muted/50 transition-colors'
-								onClick={() =>
-									handleInstitutionClick('hospital', hospital)
-								}
-							>
-								<CardHeader>
-									<CardTitle>{hospital}</CardTitle>
-									<CardDescription>
-										Click to schedule an appointment
-									</CardDescription>
-								</CardHeader>
-							</Card>
-						))}
-					</div>
+			<div className='flex justify-end mb-6'>
+				<div className='w-full md:w-64'>
+					<Select
+						value={selectedFilter}
+						onValueChange={value => setSelectedFilter(value)}
+					>
+						<SelectTrigger>
+							<SelectValue placeholder="Xizmatlar bo'yicha saralash" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value='all'>
+								Barcha xizmatlar
+							</SelectItem>
+							{uniqueServices.map((service, index) => (
+								<SelectItem key={index} value={service}>
+									{service}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 				</div>
 			</div>
 
-			<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			{loading ? (
+				<div className='flex justify-center items-center h-40'>
+					<div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary'></div>
+				</div>
+			) : error ? (
+				<div className='bg-destructive/10 border border-destructive p-4 rounded-md mb-6'>
+					<p className='text-destructive font-medium'>{error}</p>
+				</div>
+			) : Object.keys(organizationsByType).length > 0 ? (
+				Object.entries(organizationsByType).map(([type, orgs]) => (
+					<div key={type} className='mb-10'>
+						<h2 className='text-2xl font-semibold mb-4 flex items-center'>
+							<Building2 className='mr-2' /> {type}
+						</h2>
+						<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+							{orgs.map(org => (
+								<Card
+									key={org._id}
+									className='cursor-pointer hover:bg-muted/50 transition-colors'
+									onClick={() => handleOrgClick(org)}
+								>
+									<CardHeader>
+										<CardTitle>{org.name}</CardTitle>
+										<CardDescription className='flex items-center gap-1'>
+											<MapPin className='h-4 w-4' />
+											{org.location}
+										</CardDescription>
+									</CardHeader>
+									<CardContent>
+										<div className='flex flex-wrap gap-2 mb-2'>
+											{org.services
+												.slice(0, 3)
+												.map((service, i) => (
+													<Badge
+														key={i}
+														variant='secondary'
+													>
+														{service}
+													</Badge>
+												))}
+											{org.services.length > 3 && (
+												<Badge variant='outline'>
+													+{org.services.length - 3}
+												</Badge>
+											)}
+										</div>
+									</CardContent>
+								</Card>
+							))}
+						</div>
+					</div>
+				))
+			) : (
+				<div className='text-center py-10'>
+					<p className='text-muted-foreground text-lg'>
+						Bu filter bo'yicha tashkilotlar topilmadi
+					</p>
+				</div>
+			)}
+
+			{/* Organization Details Modal */}
+			<Dialog open={isOrgModalOpen} onOpenChange={setIsOrgModalOpen}>
+				<DialogContent className='sm:max-w-[500px]'>
+					{selectedOrg && (
+						<>
+							<DialogHeader>
+								<DialogTitle>{selectedOrg.name}</DialogTitle>
+								<DialogDescription>
+									Tashkilot haqida batafsil ma'lumot
+								</DialogDescription>
+							</DialogHeader>
+
+							<div className='py-4 space-y-4'>
+								<div className='flex items-start gap-2'>
+									<MapPin className='h-5 w-5 text-muted-foreground mt-0.5' />
+									<div>
+										<Label className='text-sm font-medium'>
+											Manzil
+										</Label>
+										<p className='text-sm'>
+											{selectedOrg.location}
+										</p>
+									</div>
+								</div>
+
+								{selectedOrg.phoneNumber && (
+									<div className='flex items-start gap-2'>
+										<Phone className='h-5 w-5 text-muted-foreground mt-0.5' />
+										<div>
+											<Label className='text-sm font-medium'>
+												Telefon
+											</Label>
+											<p className='text-sm'>
+												{selectedOrg.phoneNumber}
+											</p>
+										</div>
+									</div>
+								)}
+
+								{selectedOrg.email && (
+									<div className='flex items-start gap-2'>
+										<Mail className='h-5 w-5 text-muted-foreground mt-0.5' />
+										<div>
+											<Label className='text-sm font-medium'>
+												Email
+											</Label>
+											<p className='text-sm'>
+												{selectedOrg.email}
+											</p>
+										</div>
+									</div>
+								)}
+
+								{selectedOrg.website && (
+									<div className='flex items-start gap-2'>
+										<Globe className='h-5 w-5 text-muted-foreground mt-0.5' />
+										<div>
+											<Label className='text-sm font-medium'>
+												Websayt
+											</Label>
+											<p className='text-sm'>
+												<a
+													href={selectedOrg.website}
+													target='_blank'
+													rel='noopener noreferrer'
+													className='text-primary hover:underline'
+												>
+													{selectedOrg.website}
+												</a>
+											</p>
+										</div>
+									</div>
+								)}
+
+								<div className='flex items-start gap-2'>
+									<Wrench className='h-5 w-5 text-muted-foreground mt-0.5' />
+									<div>
+										<Label className='text-sm font-medium'>
+											Xizmatlar
+										</Label>
+										<div className='flex flex-wrap gap-2 mt-1'>
+											{selectedOrg.services.map(
+												(service, i) => (
+													<Button
+														key={i}
+														variant='outline'
+														size='sm'
+														className='mt-1'
+														onClick={() =>
+															handleServiceClick(
+																service
+															)
+														}
+													>
+														{service}
+													</Button>
+												)
+											)}
+										</div>
+									</div>
+								</div>
+
+								<div className='flex items-start gap-2'>
+									<Clock className='h-5 w-5 text-muted-foreground mt-0.5' />
+									<div>
+										<Label className='text-sm font-medium'>
+											Ish vaqti
+										</Label>
+										<div className='grid grid-cols-2 gap-x-4 gap-y-1 mt-1'>
+											{Object.entries(
+												selectedOrg.schedule
+											).map(([day, hours]) => (
+												<div
+													key={day}
+													className='text-sm'
+												>
+													<span className='font-medium'>
+														{translateDay(day)}:
+													</span>{' '}
+													<span className='text-muted-foreground'>
+														{hours}
+													</span>
+												</div>
+											))}
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div className='flex justify-end'>
+								<Button
+									onClick={() => setIsOrgModalOpen(false)}
+								>
+									Yopish
+								</Button>
+							</div>
+						</>
+					)}
+				</DialogContent>
+			</Dialog>
+
+			{/* Queue Registration Modal */}
+			<Dialog open={isQueueModalOpen} onOpenChange={setIsQueueModalOpen}>
 				<DialogContent className='sm:max-w-[500px]'>
 					<DialogHeader>
-						<DialogTitle>
-							Schedule an appointment at {selectedInstitution}
-						</DialogTitle>
+						<DialogTitle>Navbatga yozilish</DialogTitle>
 						<DialogDescription>
-							Fill in the details below to register for an
-							appointment.
+							{selectedService} xizmati uchun ma'lumotlarni
+							to'ldiring
 						</DialogDescription>
 					</DialogHeader>
-					<form onSubmit={handleSubmit}>
+
+					<form onSubmit={handleSubmitQueue}>
 						<div className='grid gap-4 py-4'>
 							<div className='grid grid-cols-4 items-center gap-4'>
-								<Label htmlFor='name' className='text-right'>
-									Full Name
+								<Label htmlFor='service' className='text-right'>
+									Xizmat
 								</Label>
-								<Input
-									id='name'
-									className='col-span-3'
-									value={formData.name}
-									onChange={handleInputChange}
-									required
-								/>
+								<div className='col-span-3'>
+									<input
+										id='service'
+										name='service'
+										className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
+										value={formData.service}
+										readOnly
+									/>
+								</div>
 							</div>
-							<div className='grid grid-cols-4 items-center gap-4'>
-								<Label htmlFor='time' className='text-right'>
-									Time
-								</Label>
-								<Input
-									id='time'
-									type='time'
-									className='col-span-3'
-									value={formData.time}
-									onChange={handleInputChange}
-									required
-								/>
-							</div>
-							<div className='grid grid-cols-4 items-center gap-4'>
-								<Label htmlFor='date' className='text-right'>
-									Date
-								</Label>
-								<Input
-									id='date'
-									type='date'
-									className='col-span-3'
-									value={formData.date}
-									onChange={handleInputChange}
-									required
-								/>
-							</div>
+
 							<div className='grid grid-cols-4 items-center gap-4'>
 								<Label
-									htmlFor='transport'
+									htmlFor='fullName'
 									className='text-right'
 								>
-									Transport
+									F.I.O
 								</Label>
-								<Select
-									required
-									value={formData.transport}
-									onValueChange={handleSelectChange}
-								>
-									<SelectTrigger className='col-span-3'>
-										<SelectValue placeholder='How will you arrive?' />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value='car'>
-											By Car
-										</SelectItem>
-										<SelectItem value='public'>
-											Public Transport
-										</SelectItem>
-										<SelectItem value='walking'>
-											Walking
-										</SelectItem>
-										<SelectItem value='other'>
-											Other
-										</SelectItem>
-									</SelectContent>
-								</Select>
+								<div className='col-span-3'>
+									<input
+										id='fullName'
+										name='fullName'
+										type='text'
+										className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
+										value={formData.fullName}
+										onChange={handleInputChange}
+										placeholder="To'liq ismingiz"
+										required
+									/>
+								</div>
 							</div>
+
 							<div className='grid grid-cols-4 items-center gap-4'>
-								<Label htmlFor='payment' className='text-right'>
-									Payment
+								<Label
+									htmlFor='phoneNumber'
+									className='text-right'
+								>
+									Telefon
 								</Label>
-								<Input
-									id='payment'
-									type='number'
-									min='0'
-									step='0.01'
-									placeholder='Amount to pay'
-									className='col-span-3'
-									value={formData.payment}
-									onChange={handleInputChange}
-									required
-								/>
+								<div className='col-span-3'>
+									<input
+										id='phoneNumber'
+										name='phoneNumber'
+										type='tel'
+										className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
+										value={formData.phoneNumber}
+										onChange={handleInputChange}
+										placeholder='+998 XX XXX XX XX'
+										required
+									/>
+								</div>
+							</div>
+
+							<div className='grid grid-cols-4 items-center gap-4'>
+								<Label
+									htmlFor='timeSlot'
+									className='text-right'
+								>
+									Vaqt
+								</Label>
+								<div className='col-span-3'>
+									<input
+										id='timeSlot'
+										name='timeSlot'
+										type='datetime-local'
+										className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
+										value={formData.timeSlot}
+										onChange={handleInputChange}
+										required
+									/>
+								</div>
 							</div>
 						</div>
+
 						<DialogFooter>
-							<Button type='submit'>Send</Button>
+							<Button type='submit' disabled={queueLoading}>
+								{queueLoading
+									? 'Yuklanmoqda...'
+									: 'Navbatga yozilish'}
+							</Button>
 						</DialogFooter>
 					</form>
 				</DialogContent>
@@ -293,3 +569,5 @@ export default function Home() {
 		</main>
 	)
 }
+
+export default OrganizationsList

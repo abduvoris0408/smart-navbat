@@ -18,7 +18,7 @@ export function AvatarImage({ src, alt }: { src: string; alt: string }) {
 	return (
 		<img
 			src={
-				'https://images2.minutemediacdn.com/image/upload/c_crop,w_3388,h_1905,x_0,y_196/c_fill,w_2160,ar_16:9,f_auto,q_auto,g_auto/images%2FGettyImages%2Fmmsport%2F90min_en_international_web%2F01jpx1f79829td9ymp65.jpg'
+				'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_640.png'
 			}
 			alt={alt}
 			className='w-full h-full object-cover'

@@ -32,6 +32,7 @@ import {
 	Trash,
 	User,
 } from 'lucide-react'
+import Link from 'next/link'
 
 export default function ProfilePage() {
 	return (
@@ -190,17 +191,21 @@ export default function ProfilePage() {
 						</TabsContent>
 					</Tabs>
 				</CardContent>
-				<CardFooter className="border-t pt-6 flex flex-col sm:flex-row gap-3 sm:justify-between">
-	<Button variant="outline" className="w-full sm:w-auto">
-		<Settings className="mr-2 h-4 w-4" />
-		Account Settings
-	</Button>
-	<Button variant="outline" className="w-full sm:w-auto text-destructive">
-		<LogOut className="mr-2 h-4 w-4" />
-		Sign Out
-	</Button>
-</CardFooter>
-
+				<CardFooter className='border-t pt-6 flex flex-col sm:flex-row gap-3 sm:justify-between'>
+					<Button variant='outline' className='w-full sm:w-auto'>
+						<Settings className='mr-2 h-4 w-4' />
+						Account Settings
+					</Button>
+					<Link href={'/login'}>
+						<Button
+							variant='outline'
+							className='w-full sm:w-auto text-destructive'
+						>
+							<LogOut className='mr-2 h-4 w-4' />
+							Sign Out
+						</Button>
+					</Link>
+				</CardFooter>
 			</Card>
 		</div>
 	)
