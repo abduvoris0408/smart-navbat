@@ -21,9 +21,19 @@ import { useToast } from '@/components/ui/use-toast'
 import { ArrowLeft, Clock, RefreshCcw } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import type { QueueItem } from '../appoint/page'
 
 export default function CategoriesPage() {
+	type QueueItem = {
+		_id: string
+		user: {
+			_id: string
+			name: string
+			email: string
+		}
+		service: string
+		timeSlot: string
+		createdAt: string
+	}
 	const [queueItems, setQueueItems] = useState<QueueItem[]>([])
 	const [isLoading, setIsLoading] = useState(true)
 	const { toast } = useToast()
