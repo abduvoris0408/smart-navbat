@@ -24,6 +24,8 @@ import { useEffect, useState } from 'react'
 
 export default function CategoriesPage() {
 	type QueueItem = {
+		name: string
+		id: string
 		_id: string
 		user: {
 			_id: string
@@ -33,7 +35,14 @@ export default function CategoriesPage() {
 		service: string
 		timeSlot: string
 		createdAt: string
+		queueNumber: string // Adding queueNumber
+		institution: string // Adding institution
+		date: string // Adding date
+		time: string // Adding time
+		transport: string // Adding transport
+		payment: number // Adding payment (as a number, if it's a monetary value)
 	}
+
 	const [queueItems, setQueueItems] = useState<QueueItem[]>([])
 	const [isLoading, setIsLoading] = useState(true)
 	const { toast } = useToast()
@@ -47,7 +56,11 @@ export default function CategoriesPage() {
 				if (storedItems) {
 					const items = JSON.parse(storedItems) as QueueItem[]
 					// Sort by creation time (newest first)
-					items.sort((a, b) => b.createdAt - a.createdAt)
+					items.sort(
+						(a, b) =>
+							new Date(b.createdAt).getTime() -
+							new Date(a.createdAt).getTime()
+					)
 					setQueueItems(items)
 				}
 			} catch (error) {
@@ -72,9 +85,15 @@ export default function CategoriesPage() {
 				const storedItems = localStorage.getItem('queueItems')
 				if (storedItems) {
 					const items = JSON.parse(storedItems) as QueueItem[]
-					items.sort((a, b) => b.createdAt - a.createdAt)
+					// Sort by creation time (newest first)
+					items.sort(
+						(a, b) =>
+							new Date(b.createdAt).getTime() -
+							new Date(a.createdAt).getTime()
+					)
 					setQueueItems(items)
 				}
+
 				toast({
 					title: 'Refreshed',
 					description: 'Queue list has been updated',
