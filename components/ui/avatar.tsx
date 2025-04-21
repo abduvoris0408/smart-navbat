@@ -1,30 +1,50 @@
-import Image from 'next/image'
-import * as React from 'react'
+"use client"
 
-export function Avatar({
-	className,
-	children,
-}: {
-	className?: string
-	children?: React.ReactNode
-}) {
-	return (
-		<div className={`rounded-full overflow-hidden ${className}`}>
-			{children}
-		</div>
-	)
-}
+import * as React from "react"
+import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
-export function AvatarImage({ src, alt }: { src: string; alt: string }) {
-	return (
-		<Image
-			src={
-				'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_640.png'
-			}
-			alt={alt}
-			className='w-full h-full object-cover'
-			width={100}
-			height={100}
-		/>
-	)
-}
+import { cn } from "@/lib/utils"
+
+const Avatar = React.forwardRef<
+  React.ElementRef<typeof AvatarPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Root
+    ref={ref}
+    className={cn(
+      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+      className
+    )}
+    {...props}
+  />
+))
+Avatar.displayName = AvatarPrimitive.Root.displayName
+
+const AvatarImage = React.forwardRef<
+  React.ElementRef<typeof AvatarPrimitive.Image>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
+>(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Image
+    ref={ref}
+    className={cn("aspect-square h-full w-full", className)}
+    {...props}
+  />
+))
+AvatarImage.displayName = AvatarPrimitive.Image.displayName
+
+const AvatarFallback = React.forwardRef<
+  React.ElementRef<typeof AvatarPrimitive.Fallback>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
+>(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Fallback
+    ref={ref}
+    className={cn(
+      "flex h-full w-full items-center justify-center rounded-full bg-muted",
+      className
+    )}
+    {...props}
+  />
+))
+AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
+
+export { Avatar, AvatarImage, AvatarFallback }
