@@ -47,7 +47,6 @@ type Organization = {
 type QueueForm = {
 	service: string
 	timeSlot: string
-	// Add basic user info fields for authentication
 	fullName: string
 	phoneNumber: string
 	appointmentTime: string
@@ -106,7 +105,23 @@ const OrganizationsList: React.FC = () => {
 					throw new Error('Server javob bermadi')
 				}
 				const data = await response.json()
-				setOrganizations(data)
+
+				// Filter organizations with "bank" in their name or services
+				const bankOrganizations = data.filter((org: Organization) => {
+					// Check if name contains "bank" (case insensitive)
+					const nameContainsBank = org.name
+						.toLowerCase()
+						.includes('bank')
+
+					// Check if any service contains "bank" (case insensitive)
+					const servicesContainBank = org.services.some(service =>
+						service.toLowerCase().includes('bank')
+					)
+
+					return nameContainsBank || servicesContainBank
+				})
+
+				setOrganizations(bankOrganizations)
 				setError(null)
 			} catch (error) {
 				console.error('Tashkilotlar yuklanmadi:', error)
@@ -296,33 +311,10 @@ const OrganizationsList: React.FC = () => {
 	}
 
 	return (
-		<main className='container mx-auto py-[90px]'>
+		<main className=' mx-auto py-[90px]'>
 			<h1 className='text-3xl font-bold text-center mb-10'>
-				Tashkilotlar ro`yxati
+				Bank xizmatlari
 			</h1>
-
-			{/* <div className='flex justify-end mb-6'>
-				<div className='w-full md:w-64'>
-					<Select
-						value={selectedFilter}
-						onValueChange={value => setSelectedFilter(value)}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Xizmatlar bo'yicha saralash" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value='all'>
-								Barcha xizmatlar
-							</SelectItem>
-							{uniqueServices.map((service, index) => (
-								<SelectItem key={index} value={service}>
-									{service}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
-			</div> */}
 
 			{loading ? (
 				<div className='flex justify-center items-center h-40'>
@@ -335,10 +327,7 @@ const OrganizationsList: React.FC = () => {
 			) : Object.keys(organizationsByType).length > 0 ? (
 				Object.entries(organizationsByType).map(([type, orgs]) => (
 					<div key={type} className='mb-10'>
-						{/* <h2 className='text-2xl font-semibold mb-4 flex items-center'>
-							<Building2 className='mr-2' /> Hamkor bank
-						</h2> */}
-						<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+						<div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
 							{orgs.map(org => (
 								<Card
 									key={org._id}
@@ -379,7 +368,7 @@ const OrganizationsList: React.FC = () => {
 			) : (
 				<div className='text-center py-10'>
 					<p className='text-muted-foreground text-lg'>
-						Bu filter bo`yicha tashkilotlar topilmadi
+						Bank xizmatlari bilan bog`liq tashkilotlar topilmadi
 					</p>
 				</div>
 			)}
@@ -392,7 +381,7 @@ const OrganizationsList: React.FC = () => {
 							<DialogHeader>
 								<DialogTitle>{selectedOrg.name}</DialogTitle>
 								<DialogDescription>
-									Tashkilot haqida batafsil ma`lumot
+									Bank haqida batafsil ma`lumot
 								</DialogDescription>
 							</DialogHeader>
 
@@ -595,25 +584,6 @@ const OrganizationsList: React.FC = () => {
 								</div>
 							</div>
 
-							{/* <div className='grid grid-cols-4 items-center gap-4'>
-								<Label
-									htmlFor='timeSlot'
-									className='text-right'
-								>
-									Vaqt
-								</Label>
-								<div className='col-span-3'>
-									<input
-										id='timeSlot'
-										name='timeSlot'
-										type='datetime-local'
-										className='w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary'
-										value={formData.timeSlot}
-										onChange={handleInputChange}
-										required
-									/>
-								</div>
-							</div> */}
 							<div className='grid grid-cols-4 items-center gap-4'>
 								<Label
 									htmlFor='appointmentDate'
