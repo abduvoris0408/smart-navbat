@@ -528,10 +528,10 @@ interface ProfileData {
 
 export default function ProfilePage() {
 	const defaultData: ProfileData = {
-		fullName: 'Alex Johnson',
+		fullName: 'Ism Familiya',
 		bio: 'Foydalanuvchi haqida ma`lumot',
 		email: 'example@mail.com',
-		joinDate: '12 April 2023',
+		joinDate: '',
 		description: 'Foydalanuvchi tavsifi',
 	}
 

@@ -73,6 +73,9 @@ const OrganizationsList: React.FC = () => {
 	})
 
 	const [organizations, setOrganizations] = useState<Organization[]>([])
+	const [filteredMedicalOrgs, setFilteredMedicalOrgs] = useState<
+		Organization[]
+	>([])
 	const [loading, setLoading] = useState<boolean>(true)
 	const [error, setError] = useState<string | null>(null)
 	const [selectedFilter, setSelectedFilter] = useState<string>('all')
@@ -94,6 +97,36 @@ const OrganizationsList: React.FC = () => {
 
 	const { toast } = useToast()
 
+	// Medical-related terms to filter by
+	const medicalTerms = [
+		'klinika',
+		'shifoxona',
+		'poliklinika',
+		'med center',
+		'tibbiyot', // Medical
+		'hospital',
+		'meditsina',
+		'doktor',
+		'kasalxona', // Hospital
+	]
+
+	// Function to check if an organization is medical-related
+	const isMedicalOrganization = (org: Organization): boolean => {
+		// Check name for medical terms
+		const nameMatches = medicalTerms.some(term =>
+			org.name.toLowerCase().includes(term.toLowerCase())
+		)
+
+		// Check services for medical terms
+		const servicesMatch = org.services.some(service =>
+			medicalTerms.some(term =>
+				service.toLowerCase().includes(term.toLowerCase())
+			)
+		)
+
+		return nameMatches || servicesMatch
+	}
+
 	useEffect(() => {
 		const fetchOrganizations = async () => {
 			setLoading(true)
@@ -105,23 +138,12 @@ const OrganizationsList: React.FC = () => {
 					throw new Error('Server javob bermadi')
 				}
 				const data = await response.json()
+				setOrganizations(data)
 
-				// Filter organizations with "bank" in their name or services
-				const bankOrganizations = data.filter((org: Organization) => {
-					// Check if name contains "bank" (case insensitive)
-					const nameContainsBank = org.name
-						.toLowerCase()
-						.includes('bank')
+				// Filter only medical organizations
+				const medicalOrgs = data.filter(isMedicalOrganization)
+				setFilteredMedicalOrgs(medicalOrgs)
 
-					// Check if any service contains "bank" (case insensitive)
-					const servicesContainBank = org.services.some(service =>
-						service.toLowerCase().includes('bank')
-					)
-
-					return nameContainsBank || servicesContainBank
-				})
-
-				setOrganizations(bankOrganizations)
 				setError(null)
 			} catch (error) {
 				console.error('Tashkilotlar yuklanmadi:', error)
@@ -134,15 +156,17 @@ const OrganizationsList: React.FC = () => {
 		fetchOrganizations()
 	}, [])
 
-	// Mavjud xizmatlar turlarini olish
-	const allServices = organizations.flatMap(org => org.services)
+	// Mavjud xizmatlar turlarini olish (only from medical organizations)
+	const allServices = filteredMedicalOrgs.flatMap(org => org.services)
 	const uniqueServices = [...new Set(allServices)]
 
-	// Tanlangan filter bo'yicha tashkilotlarni filtrlash
-	const filteredOrganizations =
+	// Tanlangan filter bo'yicha tibbiy tashkilotlarni filtrlash
+	const displayedOrganizations =
 		selectedFilter === 'all'
-			? organizations
-			: organizations.filter(org => org.services.includes(selectedFilter))
+			? filteredMedicalOrgs
+			: filteredMedicalOrgs.filter(org =>
+					org.services.includes(selectedFilter)
+			  )
 
 	// Hafta kunlarini o'zbekchaga o'girish
 	const translateDay = (day: string) => {
@@ -300,8 +324,8 @@ const OrganizationsList: React.FC = () => {
 
 	const organizationsByType: Record<string, Organization[]> = {}
 
-	if (filteredOrganizations.length > 0) {
-		filteredOrganizations.forEach(org => {
+	if (displayedOrganizations.length > 0) {
+		displayedOrganizations.forEach(org => {
 			const firstService = org.services[0] || 'Boshqa'
 			if (!organizationsByType[firstService]) {
 				organizationsByType[firstService] = []
@@ -313,7 +337,7 @@ const OrganizationsList: React.FC = () => {
 	return (
 		<main className=' mx-auto py-[90px]'>
 			<h1 className='text-3xl font-bold text-center mb-10'>
-				Bank xizmatlari
+				Tibbiy Tashkilotlar ro`yxati
 			</h1>
 
 			{loading ? (
@@ -324,10 +348,16 @@ const OrganizationsList: React.FC = () => {
 				<div className='bg-destructive/10 border border-destructive p-4 rounded-md mb-6'>
 					<p className='text-destructive font-medium'>{error}</p>
 				</div>
+			) : displayedOrganizations.length === 0 ? (
+				<div className='text-center py-10'>
+					<p className='text-muted-foreground text-lg'>
+						Tibbiy tashkilotlar topilmadi
+					</p>
+				</div>
 			) : Object.keys(organizationsByType).length > 0 ? (
 				Object.entries(organizationsByType).map(([type, orgs]) => (
 					<div key={type} className='mb-10'>
-						<div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+						<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
 							{orgs.map(org => (
 								<Card
 									key={org._id}
@@ -368,7 +398,7 @@ const OrganizationsList: React.FC = () => {
 			) : (
 				<div className='text-center py-10'>
 					<p className='text-muted-foreground text-lg'>
-						Bank xizmatlari bilan bog`liq tashkilotlar topilmadi
+						Bu filter bo`yicha tibbiy tashkilotlar topilmadi
 					</p>
 				</div>
 			)}
@@ -381,7 +411,7 @@ const OrganizationsList: React.FC = () => {
 							<DialogHeader>
 								<DialogTitle>{selectedOrg.name}</DialogTitle>
 								<DialogDescription>
-									Bank haqida batafsil ma`lumot
+									Tashkilot haqida batafsil ma`lumot
 								</DialogDescription>
 							</DialogHeader>
 

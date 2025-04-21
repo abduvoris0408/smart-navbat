@@ -140,15 +140,16 @@ function BlogCard(blog: Props) {
 
 					{/* Title */}
 					<h2 className='text-3xl max-md:text-2xl font-creteRound group-hover:text-blue-500 transition-colors'>
-						Bankda qulay xizmatdan foydalaning
+						Chiroyli ko‘rinish — tartibli navbatdan boshlanadi
 					</h2>
 					<p className='text-muted-foreground line-clamp-3'>
-						Har bir mijozni ham vaqt ham moliyaviya taraflama
-						xursand qilamiz.Ham vaqtingizni ham naqdingizni tejang
+						Smartnavbat bilan sartaroshga borish yanada oson!
+						Qayerda bo‘lishingizdan qat’i nazar, navbatni oldindan
+						band qiling va vaqtingizni tejang.
 					</p>
 				</Link>
 			</div>
-			<Link href={`/appoint/auto-service`}>
+			<Link href={`/appoint/autoservice`}>
 				<div className='relative bg-secondary rounded-md'>
 					<Image
 						width={650}
@@ -176,11 +177,11 @@ function BlogCard(blog: Props) {
 
 					{/* Title */}
 					<h2 className='text-3xl max-md:text-2xl font-creteRound group-hover:text-blue-500 transition-colors'>
-						Bankda qulay xizmatdan foydalaning
+						Avtotexnikxizmat endi siz xohlagan vaqtda
 					</h2>
 					<p className='text-muted-foreground line-clamp-3'>
-						Har bir mijozni ham vaqt ham moliyaviya taraflama
-						xursand qilamiz.Ham vaqtingizni ham naqdingizni tejang
+						Smartnavbat bilan o‘zingizga qulay vaqtni belgilang.
+						Mashinangizga texnik xizmat — samarali, tez va tartibli!
 					</p>
 				</Link>
 			</div>
@@ -212,11 +213,12 @@ function BlogCard(blog: Props) {
 
 					{/* Title */}
 					<h2 className='text-3xl max-md:text-2xl font-creteRound group-hover:text-blue-500 transition-colors'>
-						Bankda qulay xizmatdan foydalaning
+						Davlat xizmatlari — Smartnavbat bilan yanada yaqin{' '}
 					</h2>
 					<p className='text-muted-foreground line-clamp-3'>
-						Har bir mijozni ham vaqt ham moliyaviya taraflama
-						xursand qilamiz.Ham vaqtingizni ham naqdingizni tejang
+						Yaqin DXM filialini tanlang, xizmat turini belgilang va
+						qulay vaqtni tanlab navbatga yoziling. Sizga mos vaqtda
+						xizmat ko‘rsatiladi.
 					</p>
 				</Link>
 			</div>
