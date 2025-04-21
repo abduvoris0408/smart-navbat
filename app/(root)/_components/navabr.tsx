@@ -1,10 +1,9 @@
 'use client'
 
 import ModeToggle from '@/components/shared/mode-toggle'
-import { Avatar, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 import { navLinks } from '@/constants'
 import { cn } from '@/lib/utils'
+import { User2 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import GlobalSearch from './global-search'
@@ -82,17 +81,12 @@ function Navabr() {
 					))}
 				</div>
 				<div className='flex items-center gap-1'>
-					<Button
+					<button
 						onClick={() => router.push('/profile')}
-						className='h-10 w-10 rounded-full bg-transparent border overflow-hidden p-0'
+						className=''
 					>
-						<Avatar className='h-full w-full'>
-							<AvatarImage
-								src='https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_640.png'
-								alt='User'
-							/>
-						</Avatar>
-					</Button>
+						<User2 className='text-sm' />
+					</button>
 
 					<GlobalSearch />
 					<ModeToggle />
