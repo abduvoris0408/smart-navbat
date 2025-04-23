@@ -141,10 +141,9 @@ const MobileAppPreview = () => {
 					<div className='relative mx-auto max-w-xs'>
 						<div className='bg-black dark:bg-white rounded-[3rem] p-3 shadow-2xl'>
 							<div className='rounded-[2.5rem] overflow-hidden bg-black dark:bg-white'>
-								<video
-									autoPlay
-									loop
-									src='/video.mp4'
+								<Image
+									src='/app.png'
+									alt='App Preview GIF'
 									width={320}
 									height={650}
 									className='rounded-b-[2.5rem] w-full h-auto'

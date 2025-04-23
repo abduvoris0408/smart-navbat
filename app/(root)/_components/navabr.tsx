@@ -240,7 +240,7 @@ function Navabr() {
 								alt='User profile'
 							/>
 							<AvatarFallback>
-								<User />
+								<User className='dark:text-white text-black' />
 							</AvatarFallback>
 						</Avatar>
 					</Button>
