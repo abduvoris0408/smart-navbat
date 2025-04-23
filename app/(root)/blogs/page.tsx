@@ -26,7 +26,7 @@ async function BlogsPage() {
 					<p className='text-muted-foreground'>Muassasalar</p>
 				</div>
 				<div className='py-2'>
-					<AddOrganButton />
+					{/* <AddOrganButton /> */}
 				</div>
 			</div>
 

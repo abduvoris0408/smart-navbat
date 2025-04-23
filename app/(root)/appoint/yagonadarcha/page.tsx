@@ -335,7 +335,7 @@ const OrganizationsList: React.FC = () => {
 	return (
 		<main className=' mx-auto py-[90px]'>
 			<h1 className='text-3xl font-bold text-center mb-10'>
-				Sartaroshxonalar ro`yxati
+				Davlat xizmatlari ro`yxati
 			</h1>
 
 			{loading ? (
