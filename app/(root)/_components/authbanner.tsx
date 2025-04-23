@@ -92,7 +92,7 @@ const AuthBanners = () => {
 					</h3>
 					<p className='mb-6'>
 						Hisobingizga kirib, navbatga yoziling va vaqtingizni
-						tejang kutish orniga o`z ishlaringizni davom ettiring
+						tejang kutish o`rniga o`z ishlaringizni davom ettiring
 					</p>
 
 					<div className='flex items-center mb-6 space-x-2'>
