@@ -74,13 +74,10 @@ export default function StatisticsComponent() {
 	}, [isVisible])
 
 	return (
-		<div
-			ref={containerRef}
-			className='container mx-auto px-2 relative overflow-hidden'
-		>
+		<div ref={containerRef} className=' relative '>
 			{/* Background decorative elements */}
-			<div className='absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl'></div>
-			<div className='absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full -ml-32 -mb-32 blur-3xl'></div>
+			{/* <div className='absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl'></div>
+			<div className='absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full -ml-32 -mb-32 blur-3xl'></div> */}
 
 			<div className='grid  grid-cols-1 md:flex md:justify-center lg:flex lg:justify-center gap-8'>
 				{/* Users Stat Card */}

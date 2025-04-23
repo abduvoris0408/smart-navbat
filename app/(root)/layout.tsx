@@ -46,39 +46,102 @@
 
 // export default Layout
 
+// 'use client'
+
+// import { Toaster } from '@/components/toaster'
+// import { ChildProps } from '@/types'
+// import { usePathname, useRouter } from 'next/navigation'
+// import { useEffect } from 'react'
+// import Footer from './_components/footer'
+// import Navabr from './_components/navabr'
+
+// function Layout({ children }: ChildProps) {
+// 	const router = useRouter()
+// 	const pathname = usePathname()
+
+// 	const isAuthPage = pathname === '/login' || pathname === '/register'
+
+// 	useEffect(() => {
+// 		const isLoggedIn = localStorage.getItem('auth_token')
+
+// 		// Agar foydalanuvchi login qilgan bo'lsa va auth sahifasida bo'lmasa
+// 		if (isLoggedIn) {
+// 			// Agar foydalanuvchi /login yoki /register sahifasida bo'lsa, ularni /ga yo'naltirish
+// 			if (isAuthPage) {
+// 				router.push('/')
+// 			}
+// 		} else {
+// 			// Agar foydalanuvchi login qilmagan bo'lsa, uni /register sahifasiga yo'naltiramiz
+// 			if (!isAuthPage) {
+// 				router.push('/register')
+// 			}
+// 		}
+// 	}, [pathname, isAuthPage, router])
+
+// 	// Agar auth sahifasida bo'lsak (login/register)
+// 	if (isAuthPage) {
+// 		return (
+// 			<main>
+// 				<div className='container'>{children}</div>
+// 				<Toaster />
+// 			</main>
+// 		)
+// 	}
+
+// 	// Login bo'lgan foydalanuvchilar uchun to'liq layout
+// 	return (
+// 		<main>
+// 			<Navabr />
+// 			<div className='container'>{children}</div>
+// 			<Toaster />
+// 			<Footer />
+// 		</main>
+// 	)
+// }
+
+// export default Layout
+
 'use client'
 
 import { Toaster } from '@/components/toaster'
 import { ChildProps } from '@/types'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Footer from './_components/footer'
 import Navabr from './_components/navabr'
+import SplashScreen from './_components/SplashScreen'
 
 function Layout({ children }: ChildProps) {
 	const router = useRouter()
 	const pathname = usePathname()
 
 	const isAuthPage = pathname === '/login' || pathname === '/register'
+	const [showSplash, setShowSplash] = useState(true)
 
 	useEffect(() => {
-		const isLoggedIn = localStorage.getItem('auth_token')
+		const token = localStorage.getItem('auth_token')
 
-		// Agar foydalanuvchi login qilgan bo'lsa va auth sahifasida bo'lmasa
-		if (isLoggedIn) {
-			// Agar foydalanuvchi /login yoki /register sahifasida bo'lsa, ularni /ga yo'naltirish
+		// Faqat birinchi kirishda '/' sahifaga push qilish
+		if (pathname !== '/') {
+			router.replace('/')
+		}
+
+		// Auth holatini tekshirish
+		if (token) {
 			if (isAuthPage) {
-				router.push('/')
+				router.replace('/')
 			}
 		} else {
-			// Agar foydalanuvchi login qilmagan bo'lsa, uni /register sahifasiga yo'naltiramiz
-			if (!isAuthPage) {
-				router.push('/register')
+			if (!isAuthPage && pathname !== '/') {
+				router.replace('/register')
 			}
 		}
-	}, [pathname, isAuthPage, router])
+	}, [])
 
-	// Agar auth sahifasida bo'lsak (login/register)
+	if (showSplash) {
+		return <SplashScreen finishLoading={() => setShowSplash(false)} />
+	}
+
 	if (isAuthPage) {
 		return (
 			<main>
@@ -88,7 +151,6 @@ function Layout({ children }: ChildProps) {
 		)
 	}
 
-	// Login bo'lgan foydalanuvchilar uchun to'liq layout
 	return (
 		<main>
 			<Navabr />
