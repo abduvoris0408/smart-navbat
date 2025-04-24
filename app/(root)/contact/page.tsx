@@ -46,7 +46,7 @@ function ContactPage() {
 					</div>
 					<div className='flex items-center gap-3 mt-2'>
 						<Phone className='w-4 h-4' />
-						<p className='text-sm'>+998 </p>
+						<p className='text-sm'>+998 938959070 </p>
 					</div>
 				</div>
 
