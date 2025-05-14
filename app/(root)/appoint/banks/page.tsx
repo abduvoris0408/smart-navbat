@@ -216,6 +216,7 @@ const OrganizationsList: React.FC = () => {
 					}),
 				}
 			)
+			console.log('Response:', response)
 
 			// Agar foydalanuvchi avtorizatsiyadan o'tmagan bo'lsa
 			if (response.status === 401) {
